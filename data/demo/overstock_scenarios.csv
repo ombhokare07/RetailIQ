@@ -1,0 +1,3 @@
+scenario_id,type,store_id,product_id,description
+SC-OVER-001,overstock,S001,P003,Explicit high final inventory.
+SC-SLOW-001,slow_mover,S002,P004,Low demand with high final inventory.

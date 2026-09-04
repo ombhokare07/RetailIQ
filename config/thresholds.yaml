@@ -1,0 +1,15 @@
+stockout:
+  critical_days_cover: 3
+  high_days_cover: 7
+  target_inventory_days: 21
+overstock:
+  days_cover: 60
+  severe_days_cover: 120
+slow_mover:
+  lookback_days: 30
+  max_units_sold: 20
+anomaly:
+  recent_days: 7
+  baseline_days: 28
+  minimum_baseline_units: 14
+  percentage_change: 0.50

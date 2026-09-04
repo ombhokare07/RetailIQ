@@ -1,0 +1,6 @@
+scenario_id,type,store_id,product_id,description
+SC-ANOM-001,sales_spike,S003,P005,Recent 7-day demand multiplier 2.6x.
+SC-ANOM-002,sales_drop,S001,P006,Recent 7-day demand multiplier 0.25x.
+SC-ZERO-001,zero_sales,S002,P007,No sales for full history.
+SC-NEW-001,insufficient_history,S003,P050,Only final 5 days exist.
+SC-MISSING-001,incomplete_data,S001,P049,Latest reorder_level is deliberately missing; system must report uncertainty.

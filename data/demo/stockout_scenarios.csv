@@ -1,0 +1,4 @@
+scenario_id,type,store_id,product_id,description
+SC-STOCK-001,critical_stockout,S001,P001,Low Pune stock with strong recent sales.
+SC-STOCK-002,near_stockout,S003,P002,Nashik stock is intentionally near its reorder horizon.
+SC-TRANSFER-001,transfer_opportunity,S002,P001,Mumbai has excess P001 while Pune is critically low.

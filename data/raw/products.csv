@@ -1,0 +1,51 @@
+product_id,product_name,category,cost_price,selling_price,supplier,lead_time_days
+P001,Amul Milk 1L,Dairy,623.69,788.86,Maharashtra Foods,4
+P002,Curd 500g,Dairy,563.95,649.15,Metro Wholesale,7
+P003,Paneer 200g,Dairy,780.99,1070.87,FreshLink Distribution,6
+P004,Butter 100g,Dairy,119.93,152.15,Prime FMCG,6
+P005,Cheese Slices,Dairy,309.22,440.9,Western Traders,6
+P006,Brown Bread,Bakery,661.75,837.99,Maharashtra Foods,5
+P007,White Bread,Bakery,197.25,257.02,Metro Wholesale,7
+P008,Burger Buns,Bakery,665.55,884.15,FreshLink Distribution,1
+P009,Rusk,Bakery,611.31,756.19,Prime FMCG,1
+P010,Tea Cake,Bakery,716.63,986.7,Western Traders,7
+P011,Cola 750ml,Beverages,171.82,218.9,Maharashtra Foods,4
+P012,Orange Drink 1L,Beverages,140.35,188.83,Metro Wholesale,1
+P013,Mineral Water 1L,Beverages,600.91,864.88,FreshLink Distribution,3
+P014,Mango Drink 1L,Beverages,308.96,393.91,Prime FMCG,3
+P015,Energy Drink 250ml,Beverages,167.79,195.12,Western Traders,5
+P016,Salted Chips,Snacks,196.99,264.17,Maharashtra Foods,4
+P017,Masala Chips,Snacks,360.98,503.49,Metro Wholesale,5
+P018,Namkeen Mix,Snacks,263.65,367.7,FreshLink Distribution,5
+P019,Roasted Peanuts,Snacks,647.72,808.27,Prime FMCG,7
+P020,Popcorn,Snacks,552.35,644.11,Western Traders,3
+P021,Shampoo 200ml,Personal Care,175.93,197.47,Maharashtra Foods,6
+P022,Soap 4 Pack,Personal Care,538.58,728.54,Metro Wholesale,6
+P023,Toothpaste 150g,Personal Care,628.97,799.7,FreshLink Distribution,4
+P024,Face Wash 100ml,Personal Care,129.04,149.4,Prime FMCG,4
+P025,Hair Oil 200ml,Personal Care,541.35,690.47,Western Traders,6
+P026,Detergent 1kg,Home Care,616.7,819.88,Maharashtra Foods,4
+P027,Dishwash Gel,Home Care,451.79,589.38,Metro Wholesale,6
+P028,Floor Cleaner 1L,Home Care,44.04,55.67,FreshLink Distribution,3
+P029,Toilet Cleaner,Home Care,187.38,235.13,Prime FMCG,7
+P030,Fabric Conditioner,Home Care,202.47,230.66,Western Traders,6
+P031,Basmati Rice 5kg,Staples,239.48,291.42,Maharashtra Foods,4
+P032,Wheat Flour 5kg,Staples,454.49,626.6,Metro Wholesale,5
+P033,Sugar 1kg,Staples,538.16,674.91,FreshLink Distribution,3
+P034,Salt 1kg,Staples,150.24,169.39,Prime FMCG,6
+P035,Toor Dal 1kg,Staples,90.24,122.58,Western Traders,5
+P036,Corn Flakes 500g,Breakfast,145.79,187.39,Maharashtra Foods,4
+P037,Oats 1kg,Breakfast,138.8,187.35,Metro Wholesale,4
+P038,Peanut Butter,Breakfast,317.2,386.83,FreshLink Distribution,4
+P039,Jam 500g,Breakfast,511.62,634.1,Prime FMCG,7
+P040,Poha 1kg,Breakfast,112.04,161.05,Western Traders,1
+P041,Frozen Peas 500g,Frozen,728.69,984.39,Maharashtra Foods,4
+P042,French Fries 750g,Frozen,775.96,1068.49,Metro Wholesale,2
+P043,Veg Nuggets,Frozen,579.17,734.56,FreshLink Distribution,6
+P044,Ice Cream Tub,Frozen,95.18,134.95,Prime FMCG,2
+P045,Frozen Paratha,Frozen,375.51,445.65,Western Traders,6
+P046,Tissue Roll Pack,Household,471.79,555.93,Maharashtra Foods,3
+P047,Garbage Bags,Household,688.16,942.99,Metro Wholesale,4
+P048,Aluminium Foil,Household,357.03,473.78,FreshLink Distribution,6
+P049,Kitchen Towels,Household,475.6,634.66,Prime FMCG,5
+P050,Batteries AA 4 Pack,Household,344.33,390.38,Western Traders,1
