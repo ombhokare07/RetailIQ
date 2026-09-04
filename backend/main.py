@@ -10,6 +10,7 @@ from backend.api.inventory import router as inventory_router
 from backend.api.financial import router as financial_router
 from backend.api.products import router as products_router
 from backend.api.sales import router as sales_router
+from backend.api.simulation import router as simulation_router
 from backend.api.stores import router as stores_router
 from backend.api.transfers import router as transfers_router
 from backend.core.config import ROOT_DIR, SETTINGS
@@ -47,6 +48,7 @@ app.include_router(products_router)
 app.include_router(stores_router)
 app.include_router(transfers_router)
 app.include_router(financial_router)
+app.include_router(simulation_router)
 
 
 DIST_DIR = ROOT_DIR / "frontend" / "dist"

@@ -27,3 +27,9 @@ transfer:
 financial:
   allowed_overstock_days: 60
   emergency_purchase_markup: 0.15
+
+simulation:
+  default_horizon_days: 14
+  max_horizon_days: 60
+  default_demand_multiplier: 1.0
+  transfer_arrival_days: 1

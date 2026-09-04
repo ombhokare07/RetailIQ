@@ -2,7 +2,7 @@ TRACK_ID=PS03
 
 # RetailIQ — Multilingual Sales & Inventory Copilot
 
-RetailIQ is a decision-support application for small multi-store retailers. It works over committed sales, inventory, product, and store data. Deterministic Python logic owns business facts, calculations, recommendations, and financial estimates; Gemini is reserved for language interpretation and grounded explanation in a later milestone.
+RetailIQ is a decision-support application for small multi-store retailers. It works over committed sales, inventory, product, and store data. Deterministic Python logic owns business facts, calculations, recommendations, simulations, and financial estimates; Gemini is reserved for language interpretation and grounded explanation in a later milestone.
 
 ## Run
 
@@ -25,16 +25,26 @@ GEMINI_API_KEY
 
 The application starts without a Gemini key and makes no network call at startup.
 
-## Current functionality — Phase 3
+## Current functionality — Phase 4
 
-Phase 3 keeps all Phase 2 analytics and adds two flagship innovations:
+Phase 4 keeps all prior deterministic analytics, smart-transfer, and financial-impact features and adds the **Retail Decision Twin**:
 
-- **Cross-Store Smart Transfer** — finds stockout-risk stores, identifies safe donor stores holding the same product, protects donor safety stock, calculates a transfer quantity, and compares before/after days of cover.
-- **Financial Impact Intelligence** — estimates revenue/gross-margin exposure from likely stockouts, capital tied up in excess stock, transfer cost, near-term purchase deferred, and the estimated benefit of transfer recommendations.
-- Every recommendation includes formulas, assumptions, and source evidence.
-- Transfer recommendations never reduce a donor below the configured 21-day demand reserve.
-- Missing or insufficient data is exposed rather than guessed.
-- Financial figures are labelled as scenario estimates and never represented as live supplier/carrier quotes.
+- Simulates **No Action**, **Supplier Reorder**, and **Smart Inter-Store Transfer** for a store/product pair.
+- Compares expected demand served, unserved units, stockout timing, ending inventory, service level, execution cost, cash committed, and estimated operating loss.
+- Uses product lead time for supplier reorders and a configurable internal-transfer arrival assumption.
+- Supports demand-shock what-if questions through a configurable multiplier such as 1.5× demand.
+- Ranks scenarios deterministically: service protection first, then operating loss/cost/cash trade-offs.
+- Labels demand shocks as assumptions, not forecasts.
+- Refuses to simulate the deliberately incomplete seeded case instead of guessing missing fields.
+- Keeps a human manager in control: RetailIQ recommends but never executes a purchase or transfer.
+
+## Flagship innovations implemented so far
+
+1. Cross-Store Smart Stock Transfer
+2. Financial Impact Intelligence
+3. Retail Decision Twin / What-If Simulator
+
+Explainable AI and multilingual Gemini interaction are planned for the next milestone.
 
 ## Key endpoints
 
@@ -55,6 +65,20 @@ GET /api/financial/summary
 GET /api/financial/revenue-risk
 GET /api/financial/overstock-capital
 GET /api/financial/transfer-benefits
+GET /api/simulation/compare
+GET /api/simulation/demand-shock
+```
+
+### Example Decision Twin
+
+```text
+/api/simulation/compare?store_id=S001&product_id=P001
+```
+
+### Example demand shock
+
+```text
+/api/simulation/demand-shock?store_id=S001&product_id=P001&demand_multiplier=1.5
 ```
 
 ## Data generated
@@ -65,9 +89,9 @@ The dataset includes explicit cases for critical stockout, near stockout, overst
 
 ## Architecture principle
 
-**Gemini handles language interpretation and explanation. Python owns facts, calculations, business rules, and decisions.**
+**Gemini handles language interpretation and explanation. Python owns facts, calculations, business rules, simulations, and decisions.**
 
-RetailIQ never asks an LLM to invent stock, revenue, demand velocity, days of cover, reorder quantities, transfer quantities, or financial impact.
+RetailIQ never asks an LLM to invent stock, revenue, demand velocity, days of cover, reorder quantities, transfer quantities, financial impact, or simulated scenario outcomes.
 
 ## Demo video
 
