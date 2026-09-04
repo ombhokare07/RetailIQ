@@ -2,7 +2,7 @@ TRACK_ID=PS03
 
 # RetailIQ — Multilingual Sales & Inventory Copilot
 
-RetailIQ is a decision-support application for small multi-store retailers. It works over committed sales, inventory, product, and store data and is engineered so deterministic Python logic owns business facts and calculations, while Gemini is reserved for language interpretation and grounded explanation in a later milestone.
+RetailIQ is a decision-support application for small multi-store retailers. It works over committed sales, inventory, product, and store data. Deterministic Python logic owns business facts, calculations, recommendations, and financial estimates; Gemini is reserved for language interpretation and grounded explanation in a later milestone.
 
 ## Run
 
@@ -23,23 +23,20 @@ Interactive API docs: http://localhost:8000/docs
 GEMINI_API_KEY
 ```
 
-The current application starts without a Gemini key and makes no network call at startup.
+The application starts without a Gemini key and makes no network call at startup.
 
-## Current functionality — Phase 2
+## Current functionality — Phase 3
 
-- Single-command FastAPI entry point on port 8000
-- Deterministic synthetic retail dataset for 3 stores, 50 products, and 120 days
-- Stockout risk with 7-day demand velocity, days of cover, supplier lead time, and suggested reorder quantity
-- Overstock detection using configurable days-of-cover thresholds
-- Slow-moving and zero-sales inventory detection
-- Sales spike/drop detection against a non-overlapping historical baseline
-- Transparent 0-100 inventory health score
-- Evidence records, calculation formulas, assumptions, and source row IDs with every material finding
-- Explicit `unknown` behaviour when required data/history is missing rather than inventing a recommendation
-- Dashboard summary API with attention counts and 30-day sales figures
-- Unit/API tests covering the deliberately seeded normal and difficult scenarios
+Phase 3 keeps all Phase 2 analytics and adds two flagship innovations:
 
-## Key Phase 2 endpoints
+- **Cross-Store Smart Transfer** — finds stockout-risk stores, identifies safe donor stores holding the same product, protects donor safety stock, calculates a transfer quantity, and compares before/after days of cover.
+- **Financial Impact Intelligence** — estimates revenue/gross-margin exposure from likely stockouts, capital tied up in excess stock, transfer cost, near-term purchase deferred, and the estimated benefit of transfer recommendations.
+- Every recommendation includes formulas, assumptions, and source evidence.
+- Transfer recommendations never reduce a donor below the configured 21-day demand reserve.
+- Missing or insufficient data is exposed rather than guessed.
+- Financial figures are labelled as scenario estimates and never represented as live supplier/carrier quotes.
+
+## Key endpoints
 
 ```text
 GET /health
@@ -51,21 +48,26 @@ GET /api/inventory/overstock
 GET /api/inventory/slow-movers
 GET /api/inventory/health
 GET /api/sales/anomalies
+GET /api/products/{product_id}/performance
+GET /api/stores/{store_id}/performance
+GET /api/transfers/recommendations
+GET /api/financial/summary
+GET /api/financial/revenue-risk
+GET /api/financial/overstock-capital
+GET /api/financial/transfer-benefits
 ```
-
-All analytics endpoints accept optional store/product filters where relevant. Open `/docs` for the live request schema.
 
 ## Data generated
 
 Committed sample files live under `data/raw/` and deliberate scenario manifests under `data/demo/`.
 
-The dataset includes explicit cases for critical stockout, near stockout, overstock, slow-moving stock, sales spike, sales drop, zero sales, insufficient history, transfer opportunity, and an incomplete inventory field.
+The dataset includes explicit cases for critical stockout, near stockout, overstock, slow-moving stock, sales spike, sales drop, zero sales, insufficient history, cross-store transfer opportunity, and an incomplete inventory field.
 
 ## Architecture principle
 
 **Gemini handles language interpretation and explanation. Python owns facts, calculations, business rules, and decisions.**
 
-RetailIQ never asks an LLM to invent current stock, revenue, demand velocity, days of cover, reorder quantity, anomaly percentages, or inventory health scores.
+RetailIQ never asks an LLM to invent stock, revenue, demand velocity, days of cover, reorder quantities, transfer quantities, or financial impact.
 
 ## Demo video
 

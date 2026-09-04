@@ -17,3 +17,13 @@ anomaly:
   baseline_days: 28
   minimum_baseline_units: 14
   percentage_change: 0.50
+
+transfer:
+  donor_min_days_cover: 21
+  minimum_transfer_units: 5
+  fixed_transfer_cost: 250
+  per_unit_transfer_cost: 2.5
+
+financial:
+  allowed_overstock_days: 60
+  emergency_purchase_markup: 0.15

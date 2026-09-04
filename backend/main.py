@@ -7,9 +7,11 @@ import uvicorn
 
 from backend.api.dashboard import router as dashboard_router
 from backend.api.inventory import router as inventory_router
+from backend.api.financial import router as financial_router
 from backend.api.products import router as products_router
 from backend.api.sales import router as sales_router
 from backend.api.stores import router as stores_router
+from backend.api.transfers import router as transfers_router
 from backend.core.config import ROOT_DIR, SETTINGS
 from backend.services.data_service import DataService, DataServiceError
 
@@ -43,6 +45,8 @@ app.include_router(inventory_router)
 app.include_router(sales_router)
 app.include_router(products_router)
 app.include_router(stores_router)
+app.include_router(transfers_router)
+app.include_router(financial_router)
 
 
 DIST_DIR = ROOT_DIR / "frontend" / "dist"
