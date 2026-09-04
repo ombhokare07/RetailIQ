@@ -1,13 +1,19 @@
 from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 
+from backend.api.dashboard import router as dashboard_router
+from backend.api.inventory import router as inventory_router
+from backend.api.products import router as products_router
+from backend.api.sales import router as sales_router
+from backend.api.stores import router as stores_router
 from backend.core.config import ROOT_DIR, SETTINGS
 from backend.services.data_service import DataService, DataServiceError
 
-APP_VERSION = str(SETTINGS.get("app", {}).get("version", "0.1.0"))
+APP_VERSION = str(SETTINGS.get("app", {}).get("version", "0.2.0"))
 app = FastAPI(title="RetailIQ", version=APP_VERSION)
 
 
@@ -28,6 +34,15 @@ def data_summary():
         return {"status": "ok", **service.summary()}
     except DataServiceError as exc:
         return {"status": "degraded", "error": str(exc)}
+
+
+# API routers are registered before the SPA catch-all so API paths can never be
+# swallowed by frontend routing.
+app.include_router(dashboard_router)
+app.include_router(inventory_router)
+app.include_router(sales_router)
+app.include_router(products_router)
+app.include_router(stores_router)
 
 
 DIST_DIR = ROOT_DIR / "frontend" / "dist"

@@ -1,6 +1,6 @@
 app:
   name: RetailIQ
-  version: 0.1.0
+  version: 0.2.0
   host: 0.0.0.0
   port: 8000
 
@@ -9,6 +9,7 @@ data:
   history_days: 120
   end_date: 2026-09-04
   currency: INR
+
 analytics:
   recent_sales_days: 7
   target_inventory_days: 21
