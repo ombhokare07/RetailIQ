@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from functools import lru_cache
+from backend.api._helpers import _analytics_for_path
+from backend.services.dataset_workspace import workspace
 
 from fastapi import APIRouter, HTTPException
 
@@ -12,8 +14,15 @@ router = APIRouter(prefix="/api/copilot", tags=["grounded multilingual copilot"]
 
 
 @lru_cache(maxsize=1)
+def _copilot_for_path(data_path: str) -> CopilotService:
+    return CopilotService(analytics=_analytics_for_path(data_path))
+
+
 def get_copilot_service() -> CopilotService:
-    return CopilotService()
+    return _copilot_for_path(str(workspace.active_path))
+
+
+get_copilot_service.cache_clear = _copilot_for_path.cache_clear
 
 
 @router.get("/status")

@@ -21,6 +21,36 @@ def localize_fallback(intent: str, payload: Any, language: str, unknowns: list[s
     unknowns = unknowns or []
     lang = language if language in {"en", "hi", "mr"} else "en"
 
+    if intent in {"decision_compare", "demand_shock"} and isinstance(payload, dict):
+        return localize_comparison(payload, lang, unknowns)
+
+    if intent == "dashboard_attention" and isinstance(payload, dict) and "top_issues" in payload:
+        counts = payload.get("stockout_summary", {})
+        count = counts.get("immediate_attention", 0)
+        transfers = payload.get("transfer_opportunities", {})
+        transfer_count = transfers.get("count", 0) if isinstance(transfers, dict) else len(transfers)
+        heading = {
+            "en": f"{count} inventory records need immediate attention. {transfer_count} safe transfer opportunities were identified.",
+            "hi": f"{count} इन्वेंट्री रिकॉर्ड पर तुरंत ध्यान देना जरूरी है। {transfer_count} सुरक्षित ट्रांसफर अवसर मिले।",
+            "mr": f"{count} इन्व्हेंटरी नोंदींकडे तातडीने लक्ष देणे आवश्यक आहे. {transfer_count} सुरक्षित ट्रान्सफर संधी आढळल्या.",
+        }[lang]
+        names = [str(item.get("product", {}).get("product_name", item.get("product_name", ""))) for item in payload.get("top_issues", [])[:3]]
+        return heading + ("\n" + ", ".join(name for name in names if name) if any(names) else "")
+
+    if isinstance(payload, list) and len(payload) > 1 and intent in {"stockout_risk", "overstock", "sales_anomalies", "smart_transfer"}:
+        if intent == "stockout_risk":
+            critical = sum(item.get("risk") == "critical" for item in payload)
+            high = sum(item.get("risk") == "high" for item in payload)
+            unknown = sum(item.get("risk") == "unknown" for item in payload)
+            heading = {
+                "en": f"{critical} products are at CRITICAL stockout risk; {high} are at HIGH risk in the selected scope. {unknown} position(s) have insufficient data. Highest-priority findings:",
+                "hi": f"चुने गए दायरे में {critical} प्रोडक्ट CRITICAL और {high} प्रोडक्ट HIGH स्टॉक-आउट जोखिम में हैं। {unknown} स्थिति के लिए डेटा अपर्याप्त है। मुख्य निष्कर्ष:",
+                "mr": f"निवडलेल्या व्याप्तीत {critical} प्रॉडक्ट CRITICAL आणि {high} प्रॉडक्ट HIGH स्टॉक-आउट जोखमीमध्ये आहेत. {unknown} नोंदीसाठी डेटा अपुरा आहे. प्राधान्याचे निष्कर्ष:",
+            }[lang]
+        else:
+            heading = {"en": f"{len(payload)} matching findings. Top findings:", "hi": f"{len(payload)} मिलते-जुलते निष्कर्ष। मुख्य निष्कर्ष:", "mr": f"{len(payload)} जुळणारे निष्कर्ष. प्रमुख निष्कर्ष:"}[lang]
+        return heading + "\n\n" + "\n\n".join(localize_fallback(intent, [item], lang, unknowns) for item in payload[:5])
+
     if intent == "stockout_risk":
         item = _first(payload if isinstance(payload, list) else [])
         if not item:
@@ -32,9 +62,9 @@ def localize_fallback(intent: str, payload: Any, language: str, unknowns: list[s
         if item.get("risk") == "unknown":
             field_text = ", ".join(item.get("unknown_fields") or ["required fields"])
             return {
-                "en": f"I cannot calculate a reliable recommendation for {item['product_name']} at {item['store_name']} because {field_text} is missing. I will not guess.",
-                "hi": f"{item['store_name']} में {item['product_name']} के लिए भरोसेमंद सिफारिश नहीं दी जा सकती क्योंकि {field_text} उपलब्ध नहीं है। मैं अनुमान नहीं लगाऊंगा।",
-                "mr": f"{item['store_name']} मधील {item['product_name']} साठी विश्वासार्ह शिफारस देता येत नाही कारण {field_text} उपलब्ध नाही. मी अंदाज लावणार नाही.",
+                "en": f"I cannot calculate a reliable recommendation for {item['product_name']} at {item['store_name']} because {field_text} is missing. Known current stock: {_fmt(item.get('current_stock'))}; recent demand: {_fmt(item.get('avg_daily_sales'))}/day. Final reorder quantity is withheld. I will not guess.",
+                "hi": f"{item['store_name']} में {item['product_name']} के लिए भरोसेमंद सिफारिश नहीं दी जा सकती क्योंकि {field_text} उपलब्ध नहीं है। ज्ञात मौजूदा स्टॉक: {_fmt(item.get('current_stock'))}; हाल की मांग: {_fmt(item.get('avg_daily_sales'))}/दिन। अंतिम रीऑर्डर मात्रा रोकी गई है। मैं अनुमान नहीं लगाऊंगा।",
+                "mr": f"{item['store_name']} मधील {item['product_name']} साठी विश्वासार्ह शिफारस देता येत नाही कारण {field_text} उपलब्ध नाही. ज्ञात सध्याचा स्टॉक: {_fmt(item.get('current_stock'))}; अलीकडील मागणी: {_fmt(item.get('avg_daily_sales'))}/दिवस. अंतिम रीऑर्डर प्रमाण दिलेले नाही. मी अंदाज लावणार नाही.",
             }[lang]
         return {
             "en": (
@@ -117,19 +147,30 @@ def localize_fallback(intent: str, payload: Any, language: str, unknowns: list[s
         }[lang]
 
     if intent == "causal_explanation":
-        base = {
-            "en": "The available retail data can show what changed, but it does not contain promotion, competitor, weather, or customer-behaviour evidence needed to prove why the change happened. I will not invent a cause.",
-            "hi": "उपलब्ध रिटेल डेटा यह दिखा सकता है कि क्या बदला, लेकिन इसमें प्रमोशन, प्रतियोगी, मौसम या ग्राहक-व्यवहार का ऐसा प्रमाण नहीं है जिससे कारण साबित हो सके। मैं कारण का अनुमान नहीं लगाऊंगा।",
-            "mr": "उपलब्ध रिटेल डेटा काय बदलले ते दाखवू शकतो, पण प्रमोशन, स्पर्धक, हवामान किंवा ग्राहक-वर्तनाचा पुरावा नसल्यामुळे बदलाचे कारण सिद्ध करता येत नाही. मी कारणाचा अंदाज लावणार नाही.",
+        sections = {
+            "en": (
+                "Unavailable causal evidence:\nThe dataset does not contain promotion history, competitor prices, weather, or customer-behaviour evidence, so causality cannot be proven. I will not invent a cause.\n\n"
+                "Suggested investigation:\nVerify promotions and store availability; check competitor pricing and local demand events. These checks are not claimed evidence."
+            ),
+            "hi": (
+                "अनुपलब्ध कारण-संबंधी प्रमाण:\nडेटासेट में प्रमोशन इतिहास, प्रतियोगी कीमतें, मौसम या ग्राहक-व्यवहार का प्रमाण नहीं है, इसलिए कारण सिद्ध नहीं किया जा सकता। मैं कारण का अनुमान नहीं लगाऊंगा।\n\n"
+                "सुझाई गई जांच:\nप्रमोशन और स्टोर उपलब्धता सत्यापित करें; प्रतियोगी कीमत और स्थानीय मांग घटनाएं देखें। ये जांच प्रमाण होने का दावा नहीं हैं।"
+            ),
+            "mr": (
+                "उपलब्ध नसलेला कारणाचा पुरावा:\nडेटासेटमध्ये प्रमोशन इतिहास, स्पर्धकांच्या किमती, हवामान किंवा ग्राहक-वर्तनाचा पुरावा नाही, त्यामुळे कारण सिद्ध करता येत नाही. मी कारणाचा अंदाज लावणार नाही.\n\n"
+                "सुचवलेली तपासणी:\nप्रमोशन आणि स्टोअर उपलब्धता तपासा; स्पर्धकांच्या किमती व स्थानिक मागणीच्या घटना पाहा. या तपासण्या पुरावा असल्याचा दावा नाहीत."
+            ),
         }[lang]
         item = _first(payload.get("anomalies", []) if isinstance(payload, dict) else [])
         if item:
             if lang == "en":
-                return f"{item['product_name']} shows a {item['anomaly_type']} of {_fmt(item['percentage_change'])}% versus the prior baseline. " + base
+                observed = f"Observed fact:\n{item['product_name']} shows a {item['anomaly_type']} of {_fmt(item['percentage_change'])}% versus the prior baseline."
             if lang == "hi":
-                return f"{item['product_name']} में पिछले बेसलाइन की तुलना में {_fmt(item['percentage_change'])}% का {item['anomaly_type']} दिखता है। " + base
-            return f"{item['product_name']} मध्ये आधीच्या बेसलाइनच्या तुलनेत {_fmt(item['percentage_change'])}% {item['anomaly_type']} दिसतो. " + base
-        return base
+                observed = f"देखा गया तथ्य:\n{item['product_name']} में पिछले बेसलाइन की तुलना में {_fmt(item['percentage_change'])}% का {item['anomaly_type']} दिखता है।"
+            if lang == "mr":
+                observed = f"निरीक्षित तथ्य:\n{item['product_name']} मध्ये आधीच्या बेसलाइनच्या तुलनेत {_fmt(item['percentage_change'])}% {item['anomaly_type']} दिसतो."
+            return observed + "\n\n" + sections
+        return sections
 
     if intent == "dashboard_attention" and isinstance(payload, dict):
         inv = payload.get("inventory", {})
@@ -163,3 +204,55 @@ def localize_fallback(intent: str, payload: Any, language: str, unknowns: list[s
         "hi": "मैं इस अनुरोध को बिना अनुमान लगाए किसी समर्थित RetailIQ विश्लेषण से नहीं जोड़ सका। स्टॉक-आउट, ओवरस्टॉक, धीमी बिक्री, बिक्री बदलाव, स्टोर/प्रोडक्ट प्रदर्शन, ट्रांसफर, वित्तीय प्रभाव या what-if के बारे में पूछें।",
         "mr": "अंदाज न लावता हा प्रश्न समर्थित RetailIQ विश्लेषणाशी जोडता आला नाही. स्टॉक-आउट, ओव्हरस्टॉक, स्लो मूव्हर्स, विक्री बदल, स्टोअर/प्रॉडक्ट कामगिरी, ट्रान्सफर, आर्थिक परिणाम किंवा what-if बद्दल विचारा.",
     }[lang]
+
+
+def localize_comparison(payload: dict, lang: str, unknowns: list[str]) -> str:
+    if payload.get("status") == "insufficient_data":
+        missing = ", ".join(payload.get("unknown_fields") or unknowns or ["required data"])
+        state = payload.get("current_state", {})
+        return {
+            "en": f"Insufficient data: {missing}. Known current stock: {_fmt(state.get('current_stock'))}; recent demand: {_fmt(state.get('avg_daily_sales'))}/day. Final reorder and scenario recommendations are withheld. I will not guess.",
+            "hi": f"अपर्याप्त डेटा: {missing}। ज्ञात मौजूदा स्टॉक: {_fmt(state.get('current_stock'))}; हाल की मांग: {_fmt(state.get('avg_daily_sales'))}/दिन। रीऑर्डर और परिदृश्य सिफारिश रोकी गई है। अनुमान नहीं लगाया जाएगा।",
+            "mr": f"अपुरा डेटा: {missing}. ज्ञात सध्याचा स्टॉक: {_fmt(state.get('current_stock'))}; अलीकडील मागणी: {_fmt(state.get('avg_daily_sales'))}/दिवस. रीऑर्डर व पर्यायाची शिफारस दिलेली नाही. अंदाज लावला जाणार नाही.",
+        }[lang]
+    assumption = payload.get("demand_assumption", {})
+    comp = payload.get("comparison", {})
+    baseline, simulated = _fmt(assumption.get("baseline_avg_daily_sales")), _fmt(assumption.get("simulated_avg_daily_sales"))
+    multiplier, change = _fmt(assumption.get("demand_multiplier")), _fmt(assumption.get("demand_change_pct"))
+    horizon = _fmt(payload.get("horizon_days"))
+    first = {
+        "en": f"Decision Twin recommends {comp.get('recommendation')} for {payload.get('product_name')} at {payload.get('store_name')}.\nBaseline demand: {baseline}/day. Demand multiplier: {multiplier}x ({change}% change). Simulated demand: {simulated}/day. Simulation horizon: {horizon} days.",
+        "hi": f"Decision Twin {payload.get('store_name')} में {payload.get('product_name')} के लिए {comp.get('recommendation')} की सिफारिश करता है।\nबेसलाइन मांग: {baseline}/दिन। मांग गुणक: {multiplier}x ({change}% बदलाव)। अनुकरण में मांग: {simulated}/दिन। अवधि: {horizon} दिन।",
+        "mr": f"Decision Twin {payload.get('store_name')} मधील {payload.get('product_name')} साठी {comp.get('recommendation')} ची शिफारस करतो.\nमूळ मागणी: {baseline}/दिवस. मागणी गुणक: {multiplier}x ({change}% बदल). अनुकरणातील मागणी: {simulated}/दिवस. कालावधी: {horizon} दिवस.",
+    }[lang]
+    if payload.get("requested_scenario_id") == "no_action":
+        no_action = next((item for item in payload.get("scenarios", []) if item.get("scenario_id") == "no_action"), None)
+        if no_action:
+            stockout_day = _fmt(no_action.get("first_stockout_day")) if no_action.get("stockout_occurs") else {"en": "none", "hi": "नहीं", "mr": "नाही"}[lang]
+            values = (_fmt(no_action.get("service_level_pct")), _fmt(no_action.get("unserved_units")), stockout_day, _fmt(no_action.get("estimated_operational_loss")), comp.get("recommendation"))
+            first = {
+                "en": "If you do nothing, service level is %s%%, %s units go unserved, first stockout day is %s, and estimated operational loss is ₹%s. The deterministic comparison recommends %s.\n" % values,
+                "hi": "यदि आप कुछ नहीं करते, सेवा स्तर %s%%, अधूरी मांग %s यूनिट, पहला स्टॉक-आउट दिन %s और अनुमानित परिचालन नुकसान ₹%s होगा। निश्चित तुलना %s की सिफारिश करती है।\n" % values,
+                "mr": "काहीही केले नाही तर सेवा पातळी %s%%, अपूर्ण मागणी %s युनिट, पहिला स्टॉक-आउट दिवस %s आणि अंदाजित परिचालन नुकसान ₹%s असेल. निश्चित तुलना %s ची शिफारस करते.\n" % values,
+            }[lang] + first.split("\n", 1)[1]
+    lines = []
+    for scenario in payload.get("scenarios", []):
+        stockout = _fmt(scenario.get("first_stockout_day")) if scenario.get("stockout_occurs") else {"en": "none", "hi": "नहीं", "mr": "नाही"}[lang]
+        values = (scenario.get("label"), _fmt(scenario.get("service_level_pct")), _fmt(scenario.get("unserved_units")), _fmt(scenario.get("ending_stock")), stockout, _fmt(scenario.get("estimated_operational_loss")), _fmt(scenario.get("execution_cost")), _fmt(scenario.get("cash_committed")))
+        template = {
+            "en": "%s: service %s%%; unserved %s units; ending stock %s; first stockout day %s; estimated operational loss ₹%s; execution cost ₹%s; cash committed ₹%s.",
+            "hi": "%s: सेवा %s%%; अधूरी मांग %s यूनिट; अंतिम स्टॉक %s; पहला स्टॉक-आउट दिन %s; अनुमानित परिचालन नुकसान ₹%s; कार्य लागत ₹%s; प्रतिबद्ध नकद ₹%s।",
+            "mr": "%s: सेवा %s%%; अपूर्ण मागणी %s युनिट; अंतिम स्टॉक %s; पहिला स्टॉक-आउट दिवस %s; अंदाजित परिचालन नुकसान ₹%s; कार्य खर्च ₹%s; रोख बांधिलकी ₹%s.",
+        }[lang]
+        lines.append(template % values)
+    reason = {
+        "en": "The deterministic ranking first minimizes unserved demand and stockout exposure, then operational loss, execution cost, and cash committed. Differences between scenarios are shown above. Manager approval is required for purchases and transfers.",
+        "hi": "निश्चित नियम पहले अधूरी मांग और स्टॉक-आउट, फिर परिचालन नुकसान, कार्य लागत और नकद की तुलना करते हैं। ऊपर परिदृश्यों के अंतर दिखते हैं। खरीद और ट्रांसफर के लिए मैनेजर की मंजूरी जरूरी है।",
+        "mr": "निश्चित नियम आधी अपूर्ण मागणी व स्टॉक-आउट, नंतर परिचालन नुकसान, कार्य खर्च व रोख बांधिलकीची तुलना करतात. पर्यायांतील फरक वर दिसतात. खरेदी व ट्रान्सफरसाठी व्यवस्थापकाची मंजुरी आवश्यक आहे.",
+    }[lang]
+    warning = "This is a what-if assumption, not a forecast claim."
+    if lang == "hi":
+        warning += " यह काल्पनिक मान्यता है, पूर्वानुमान का दावा नहीं।"
+    elif lang == "mr":
+        warning += " हे गृहीतक आहे, भविष्यवाणीचा दावा नाही."
+    return first + "\n\n" + "\n".join(lines) + "\n\n" + reason + "\n" + warning

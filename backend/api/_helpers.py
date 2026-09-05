@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from functools import lru_cache
+from pathlib import Path
+from backend.services.data_service import DataService
+from backend.services.dataset_workspace import workspace
 
 from fastapi import HTTPException
 
@@ -10,8 +13,15 @@ from backend.services.decision_service import DecisionService
 
 
 @lru_cache(maxsize=1)
+def _analytics_for_path(data_path: str) -> AnalyticsService:
+    return AnalyticsService(DataService(Path(data_path)))
+
+
 def get_analytics_service() -> AnalyticsService:
-    return AnalyticsService()
+    return _analytics_for_path(str(workspace.active_path))
+
+
+get_analytics_service.cache_clear = _analytics_for_path.cache_clear
 
 
 def analytics_or_503() -> AnalyticsService:
@@ -24,8 +34,15 @@ def analytics_or_503() -> AnalyticsService:
 
 
 @lru_cache(maxsize=1)
+def _decisions_for_path(data_path: str) -> DecisionService:
+    return DecisionService(_analytics_for_path(data_path))
+
+
 def get_decision_service() -> DecisionService:
-    return DecisionService(get_analytics_service())
+    return _decisions_for_path(str(workspace.active_path))
+
+
+get_decision_service.cache_clear = _decisions_for_path.cache_clear
 
 
 def decision_or_503() -> DecisionService:

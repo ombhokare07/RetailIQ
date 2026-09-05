@@ -7,7 +7,8 @@ SupportedLanguage = Literal["en", "hi", "mr"]
 
 _MARATHI_HINTS = {
     "काय", "कोणते", "कोणता", "कोणती", "आहे", "आहेत", "करा", "मला", "पुणे",
-    "मुंबई", "नाशिक", "संपणार", "विक्री", "जास्त", "कमी", "स्टॉक",
+    "मुंबई", "नाशिक", "संपणार", "विक्री", "जास्त", "कमी", "स्टॉक", "पुण्यात",
+    "मुंबईत", "स्टोअरमध्ये", "करावे", "करू", "नये", "कशाकडे", "लक्ष",
 }
 _HINDI_HINTS = {
     "क्या", "कौन", "कौनसे", "कौनसे", "है", "हैं", "मुझे", "करना", "खत्म",
@@ -43,6 +44,6 @@ def detect_language(text: str, preferred: str | None = None) -> SupportedLanguag
         return "hi"
 
     # Common Marathi forms that are strong signals even when tokenization varies.
-    if any(fragment in normalized for fragment in ["संपणार", "कोणते", "आहेत", "मला सांग"]):
+    if any(fragment in normalized for fragment in ["संपणार", "कोणते", "आहेत", "मला सांग", "पुण्यात", "स्टोअरमध्ये", "करावे", "कशाकडे"]):
         return "mr"
     return "hi"

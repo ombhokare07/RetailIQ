@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from functools import lru_cache
+from backend.api._helpers import _decisions_for_path
+from backend.services.dataset_workspace import workspace
 
 from fastapi import APIRouter, HTTPException, Query
 
@@ -11,8 +13,15 @@ router = APIRouter(prefix="/api/simulation", tags=["retail decision twin"])
 
 
 @lru_cache(maxsize=1)
+def _simulation_for_path(data_path: str) -> SimulationService:
+    return SimulationService(_decisions_for_path(data_path))
+
+
 def get_simulation_service() -> SimulationService:
-    return SimulationService()
+    return _simulation_for_path(str(workspace.active_path))
+
+
+get_simulation_service.cache_clear = _simulation_for_path.cache_clear
 
 
 def simulation_or_503() -> SimulationService:

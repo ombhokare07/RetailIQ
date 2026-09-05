@@ -12,6 +12,7 @@ from backend.analytics.slow_movers import calculate_slow_movers
 from backend.analytics.stockout import calculate_stockout_risk
 from backend.core.config import ROOT_DIR, SETTINGS, THRESHOLDS
 from backend.services.data_service import DataService
+from backend.services.dataset_workspace import workspace
 
 
 class AnalyticsService:
@@ -22,7 +23,7 @@ class AnalyticsService:
     """
 
     def __init__(self, data_service: DataService | None = None):
-        self.data_service = data_service or DataService(ROOT_DIR / "data" / "raw")
+        self.data_service = data_service or DataService(workspace.active_path)
 
     @cached_property
     def context(self):
@@ -146,29 +147,36 @@ class AnalyticsService:
     def store_performance(self, store_id: str) -> dict | None:
         return calculate_store_performance(self.context, store_id, period_days=30)
 
-    def dashboard_summary(self) -> dict:
+    def dashboard_summary(self, store_id: str | None = None) -> dict:
         recent_start, recent_end = inclusive_window_endpoints(self.context.analysis_date, 30)
         recent_sales = self.context.sales[
             (self.context.sales["date"] >= recent_start)
             & (self.context.sales["date"] <= recent_end)
         ]
 
+        if store_id:
+            recent_sales = recent_sales[recent_sales["store_id"] == store_id]
+        stockout_items = self.stockout(store_id=store_id)
+        overstock_items = self.overstock(store_id=store_id)
+        anomaly_items = self.anomalies(store_id=store_id)
+        health_items = self.inventory_health(store_id=store_id)
+
         stockout_counts = {
-            level: sum(1 for i in self.stockout_items if i["risk"] == level)
+            level: sum(1 for i in stockout_items if i["risk"] == level)
             for level in ["critical", "high", "watch", "low", "none", "unknown"]
         }
         overstock_counts = {
-            level: sum(1 for i in self.overstock_items if i["severity"] == level)
+            level: sum(1 for i in overstock_items if i["severity"] == level)
             for level in ["severe", "overstock", "unknown"]
         }
         anomaly_counts = {
-            level: sum(1 for i in self.anomaly_items if i["anomaly_type"] == level)
+            level: sum(1 for i in anomaly_items if i["anomaly_type"] == level)
             for level in ["spike", "drop"]
         }
-        health_known = [i["score"] for i in self.health_items if i["score"] is not None]
+        health_known = [i["score"] for i in health_items if i["score"] is not None]
 
         attention = []
-        for item in self.stockout_items:
+        for item in stockout_items:
             if item["risk"] in {"critical", "high", "unknown"}:
                 attention.append(
                     {
@@ -183,7 +191,7 @@ class AnalyticsService:
                         "reason": item["reason"],
                     }
                 )
-        for item in self.overstock_items:
+        for item in overstock_items:
             if item["severity"] in {"severe", "overstock"}:
                 attention.append(
                     {
@@ -198,7 +206,7 @@ class AnalyticsService:
                         "reason": item["reason"],
                     }
                 )
-        for item in self.anomaly_items:
+        for item in anomaly_items:
             attention.append(
                 {
                     "type": "sales_anomaly",
@@ -245,7 +253,7 @@ class AnalyticsService:
             "inventory": {
                 "stockout_risk": stockout_counts,
                 "overstock": overstock_counts,
-                "slow_movers": len(self.slow_mover_items),
+                "slow_movers": len(self.slow_movers(store_id=store_id)),
                 "average_health_score": (
                     round(sum(health_known) / len(health_known), 2) if health_known else None
                 ),

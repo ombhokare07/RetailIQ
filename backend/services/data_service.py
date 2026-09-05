@@ -33,7 +33,10 @@ class DataService:
         if not path.exists():
             raise DataServiceError(f"Required data file is missing: {path}")
         try:
-            frame = pd.read_csv(path)
+            frame = pd.read_csv(path, dtype={
+                column: str for column in self.REQUIRED[name]
+                if column.endswith("_id") or column in {"product_name", "category", "supplier", "store_name", "city"}
+            })
         except Exception as exc:
             raise DataServiceError(f"Could not read {path.name}: {exc}") from exc
         missing = self.REQUIRED[name] - set(frame.columns)
