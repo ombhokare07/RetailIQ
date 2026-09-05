@@ -1,156 +1,297 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#0d1728" />
-  <meta name="description" content="RetailIQ — grounded multilingual sales and inventory copilot" />
-  <title>RetailIQ — Sales & Inventory Copilot</title>
-  <link rel="stylesheet" href="/assets/styles.css" />
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="#f6f7f9" name="theme-color"/>
+<meta content="RetailIQ — retail operations and decision support dashboard" name="description"/>
+<title>RetailIQ — Retail Decision Intelligence</title>
+<link href="/assets/styles.css" rel="stylesheet"/>
 </head>
 <body>
-  <div class="app-shell">
-    <aside class="sidebar" aria-label="Primary navigation">
-      <div class="brand">
-        <div class="brand-mark">R</div>
-        <div><strong>RetailIQ</strong><span>Decision Intelligence</span></div>
-      </div>
-      <nav class="nav" id="nav">
-        <button class="nav-item active" data-page="overview"><span>◫</span> Overview</button>
-        <button class="nav-item" data-page="inventory"><span>▦</span> Inventory</button>
-        <button class="nav-item" data-page="sales"><span>↗</span> Sales Signals</button>
-        <button class="nav-item" data-page="transfers"><span>⇄</span> Smart Transfers</button>
-        <button class="nav-item" data-page="twin"><span>◇</span> Decision Twin</button>
-        <button class="nav-item" data-page="financial"><span>₹</span> Financial Impact</button>
-        <button class="nav-item" data-page="copilot"><span>✦</span> AI Copilot</button>
-      </nav>
-      <div class="sidebar-foot">
-        <div class="trust-mini"><span class="pulse"></span><span>Grounded mode</span></div>
-        <small>Python owns facts & decisions</small>
-      </div>
-    </aside>
+<span class="sr-only">AI Copilot</span>
+<section aria-label="Connect retail data" class="onboarding-screen" hidden="" id="onboarding-screen">
+<header class="onboarding-header">
+<div class="onboarding-brand"><div class="auth-logo small">R</div><div><strong>RetailIQ</strong><span>Setup workspace</span></div></div>
+<div aria-label="Setup progress" class="setup-progress"><span class="complete">1</span><i></i><span class="active">2</span><i></i><span>3</span><small>Sign in</small><small>Connect data</small><small>Decide</small></div>
 
-    <main class="main">
-      <header class="topbar">
-        <div>
-          <p class="eyebrow">RETAIL OPERATIONS COPILOT</p>
-          <h1 id="page-title">Overview</h1>
-        </div>
-        <div class="top-actions">
-          <div class="date-chip"><span>Analysis date</span><strong id="analysis-date">—</strong></div>
-          <button class="icon-btn" id="refresh-btn" title="Refresh data">↻</button>
-          <div class="status-chip" id="api-status"><span class="status-dot"></span>Connecting</div>
-        </div>
-      </header>
-
-      <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-      <section class="page active" id="page-overview">
-        <div class="hero-strip">
-          <div>
-            <span class="pill">PS03 · Sales & Inventory Copilot</span>
-            <h2>Know what needs attention <em>before</em> it becomes a problem.</h2>
-            <p>Grounded retail intelligence across stock risk, demand signals, transfers, financial impact and what-if decisions.</p>
-          </div>
-          <button class="primary-btn" data-goto="copilot">Ask RetailIQ <span>→</span></button>
-        </div>
-
-        <div class="metric-grid" id="overview-metrics">
-          <div class="metric-card skeleton-card"></div><div class="metric-card skeleton-card"></div><div class="metric-card skeleton-card"></div><div class="metric-card skeleton-card"></div>
-        </div>
-
-        <div class="grid-2 overview-grid">
-          <article class="panel">
-            <div class="panel-head"><div><p class="eyebrow">RISK DISTRIBUTION</p><h3>Inventory attention</h3></div><button class="text-btn" data-goto="inventory">View inventory →</button></div>
-            <div id="risk-bars" class="risk-bars"></div>
-          </article>
-          <article class="panel trust-panel">
-            <div class="panel-head"><div><p class="eyebrow">TRUST LAYER</p><h3>Why this answer can be trusted</h3></div><span class="shield">✓</span></div>
-            <div class="trust-list">
-              <div><strong>Deterministic metrics</strong><span>Stock, revenue, reorder quantity and simulations are calculated in Python.</span></div>
-              <div><strong>Evidence attached</strong><span>Recommendations carry source record IDs and calculation assumptions.</span></div>
-              <div><strong>No silent guessing</strong><span>Missing or ambiguous data becomes an explicit unknown or clarification.</span></div>
-            </div>
-          </article>
-        </div>
-
-        <article class="panel">
-          <div class="panel-head"><div><p class="eyebrow">PRIORITY QUEUE</p><h3>What needs attention now</h3></div><span class="muted" id="attention-count">—</span></div>
-          <div class="attention-list" id="attention-list"></div>
-        </article>
-      </section>
-
-      <section class="page" id="page-inventory">
-        <div class="section-intro"><div><p class="eyebrow">DETERMINISTIC INVENTORY ANALYTICS</p><h2>Inventory risk cockpit</h2><p>Days of cover, lead time, reorder logic and data-quality uncertainty are computed from committed records.</p></div></div>
-        <div class="tab-row" id="inventory-tabs"><button class="tab active" data-inv="stockout">Stockout risk</button><button class="tab" data-inv="overstock">Overstock</button><button class="tab" data-inv="slow">Slow movers</button></div>
-        <article class="panel table-panel"><div class="table-wrap"><table><thead id="inventory-head"></thead><tbody id="inventory-body"></tbody></table></div></article>
-      </section>
-
-      <section class="page" id="page-sales">
-        <div class="section-intro"><div><p class="eyebrow">SIGNAL DETECTION</p><h2>Sales spikes & drops</h2><p>Recent demand is compared against a preceding baseline window. RetailIQ reports the change without inventing causes.</p></div></div>
-        <div class="signal-summary" id="signal-summary"></div>
-        <article class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>Product</th><th>Store</th><th>Signal</th><th>Recent/day</th><th>Baseline/day</th><th>Change</th><th>Explanation</th></tr></thead><tbody id="sales-body"></tbody></table></div></article>
-      </section>
-
-      <section class="page" id="page-transfers">
-        <div class="section-intro"><div><p class="eyebrow">CROSS-STORE OPTIMISATION</p><h2>Smart stock transfers</h2><p>Move surplus inventory before placing an emergency purchase, while preserving donor-store safety reserve.</p></div></div>
-        <div class="transfer-list" id="transfer-list"></div>
-      </section>
-
-      <section class="page" id="page-twin">
-        <div class="section-intro"><div><p class="eyebrow">RETAIL DECISION TWIN</p><h2>Compare actions before acting</h2><p>Simulate no action, supplier reorder and safe inter-store transfer under the same demand assumption.</p></div></div>
-        <article class="panel twin-controls">
-          <label>Store ID<input id="twin-store" value="S001" /></label>
-          <label>Product ID<input id="twin-product" value="P001" /></label>
-          <label>Horizon<input id="twin-horizon" type="number" min="1" max="60" value="14" /><span>days</span></label>
-          <label>Demand<input id="twin-demand" type="number" min="0.1" max="5" step="0.1" value="1" /><span>×</span></label>
-          <button class="primary-btn" id="run-twin">Run simulation</button>
-        </article>
-        <div id="twin-current" class="current-state"></div>
-        <div class="scenario-grid" id="scenario-grid"></div>
-        <article class="panel recommendation-panel" id="twin-recommendation"></article>
-      </section>
-
-      <section class="page" id="page-financial">
-        <div class="section-intro"><div><p class="eyebrow">₹ IMPACT INTELLIGENCE</p><h2>Translate operations into financial impact</h2><p>Scenario estimates are grounded in committed prices, inventory, demand and configured logistics assumptions.</p></div></div>
-        <div class="metric-grid" id="financial-metrics"></div>
-        <div class="grid-2">
-          <article class="panel"><div class="panel-head"><div><p class="eyebrow">STOCKOUT EXPOSURE</p><h3>Revenue & margin at risk</h3></div></div><div id="stockout-money" class="money-breakdown"></div></article>
-          <article class="panel"><div class="panel-head"><div><p class="eyebrow">TRANSFER VALUE</p><h3>Potential benefit</h3></div></div><div id="transfer-money" class="money-breakdown"></div></article>
-        </div>
-        <p class="disclaimer" id="financial-disclaimer"></p>
-      </section>
-
-      <section class="page" id="page-copilot">
-        <div class="copilot-layout">
-          <article class="copilot-main panel">
-            <div class="copilot-head">
-              <div><span class="ai-orb">✦</span><div><p class="eyebrow">GROUNDED MULTILINGUAL AI</p><h2>Ask RetailIQ</h2></div></div>
-              <div class="model-status" id="model-status">Checking Gemini…</div>
-            </div>
-            <div class="quick-prompts" id="quick-prompts">
-              <button>Which products may run out in Pune?</button>
-              <button>What should I do about Amul Milk in Pune?</button>
-              <button>Why did Brown Bread sales fall in Pune?</button>
-              <button>पुणे स्टोअरमध्ये कोणते प्रॉडक्ट लवकर संपणार आहेत?</button>
-            </div>
-            <div class="chat" id="chat">
-              <div class="message assistant"><div class="avatar">R</div><div class="bubble"><strong>RetailIQ Copilot</strong><p>Ask about stock risk, sales signals, transfers, financial impact or a what-if decision. Every answer is grounded in deterministic retail data.</p></div></div>
-            </div>
-            <form class="composer" id="copilot-form">
-              <select id="copilot-language" aria-label="Response language"><option value="">Auto</option><option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option></select>
-              <textarea id="copilot-input" rows="1" maxlength="1000" placeholder="Ask a retail question…"></textarea>
-              <button class="send-btn" type="submit" aria-label="Send">↑</button>
-            </form>
-          </article>
-          <aside class="panel evidence-panel">
-            <div class="panel-head"><div><p class="eyebrow">TRACEABILITY</p><h3>Evidence & safeguards</h3></div></div>
-            <div id="evidence-content" class="evidence-empty">Ask a question to inspect the tool used, source records, assumptions and uncertainty.</div>
-          </aside>
-        </div>
-      </section>
-    </main>
-  </div>
-  <script src="/assets/app.js" defer></script>
+<div class="onboarding-head-actions"><button class="quiet-btn" hidden="" id="onboarding-back" type="button">Back to workspace</button><button class="quiet-btn" id="onboarding-logout">Sign out</button></div></header>
+<main class="onboarding-main">
+<div class="onboarding-intro">
+<p class="section-kicker">STEP 2 · CONNECT DATA</p>
+<h1>Start with your retail data.</h1>
+<p>RetailIQ validates all four CSV files before a single dashboard metric or recommendation is shown.</p>
+</div>
+<div class="onboarding-layout">
+<section class="upload-stage">
+<div class="upload-stage-head"><div><h2>Retail dataset</h2><p>Choose the four required CSV files. Nothing is activated until validation passes.</p></div><span class="status-badge neutral" id="data-validation-status">Not validated</span></div>
+<div class="onboarding-upload-grid">
+<label class="onboarding-file-card" data-file-card="stores"><span class="file-number">01</span><div><strong>stores.csv</strong><small>Store ID, name and city</small></div><input accept=".csv,text/csv" id="file-stores" type="file"/><em id="file-name-stores">Choose file</em></label>
+<label class="onboarding-file-card" data-file-card="products"><span class="file-number">02</span><div><strong>products.csv</strong><small>Catalog, prices and lead time</small></div><input accept=".csv,text/csv" id="file-products" type="file"/><em id="file-name-products">Choose file</em></label>
+<label class="onboarding-file-card" data-file-card="sales"><span class="file-number">03</span><div><strong>sales.csv</strong><small>Daily units sold and revenue</small></div><input accept=".csv,text/csv" id="file-sales" type="file"/><em id="file-name-sales">Choose file</em></label>
+<label class="onboarding-file-card" data-file-card="inventory"><span class="file-number">04</span><div><strong>inventory.csv</strong><small>Daily stock and reorder levels</small></div><input accept=".csv,text/csv" id="file-inventory" type="file"/><em id="file-name-inventory">Choose file</em></label>
+</div>
+<div class="onboarding-actions"><button class="primary-btn large" id="validate-data">Validate dataset</button><button class="secondary-btn large" disabled="" id="activate-data">Activate &amp; open workspace</button></div>
+<button class="demo-link" id="use-demo-data">Explore with demo data instead</button>
+</section>
+<aside class="validation-stage">
+<div class="validation-stage-head"><span class="validation-icon">✓</span><div><h3>Validation report</h3><p>Schema, relationships and numeric safety checks.</p></div></div>
+<div class="validation-results" id="validation-results"><div class="validation-placeholder"><strong>Waiting for files</strong><span>Select all four CSV files, then validate.</span></div></div>
+<div class="validation-summary" id="onboarding-validation-summary"></div>
+</aside>
+</div>
+<section class="preview-stage" id="preview-stage">
+<div class="preview-stage-head"><div><p class="section-kicker">PREVIEW</p><h2>Validated sample rows</h2></div><span>First five rows per file</span></div>
+<div class="data-preview" id="data-preview"><div class="empty-state">A preview appears after successful validation.</div></div>
+</section>
+</main>
+</section><section aria-label="RetailIQ sign in" class="auth-screen" id="auth-screen">
+<div class="auth-visual">
+<div class="auth-brand"><div class="auth-logo">R</div><div><strong>RetailIQ</strong><span>Retail Decision Intelligence</span></div></div>
+<div class="auth-story">
+<span class="eyebrow-light">RETAIL OPERATIONS, EXPLAINED</span>
+<h1>Move from raw store data to a confident retail decision.</h1>
+<p>Validate your retail dataset, surface operational risk, compare scenarios and ask grounded questions from one workspace.</p>
+<div class="auth-proof-grid">
+<div><strong>Data first</strong><span>Validate before analysis</span></div>
+<div><strong>Deterministic</strong><span>Python owns the numbers</span></div>
+<div><strong>Grounded</strong><span>Copilot explains evidence</span></div>
+</div>
+</div>
+<div class="auth-footnote">NexusTiq24 · PS03 Retail — Sales &amp; Inventory Copilot</div>
+</div>
+<div class="auth-panel-wrap">
+<div class="auth-panel">
+<div class="mobile-auth-brand"><div class="auth-logo">R</div><strong>RetailIQ</strong></div>
+<p class="section-kicker">WORKSPACE ACCESS</p>
+<h2>Welcome back</h2>
+<p class="auth-copy">Sign in to open your retail decision workspace.</p>
+<form class="login-form" id="login-form">
+<label><span>Email</span><input autocomplete="username" id="login-email" required="" type="email" value="manager@retailiq.local"/></label>
+<label><span>Password</span><div class="password-field"><input autocomplete="current-password" id="login-password" required="" type="password" value="retailiq2026"/><button aria-label="Show password" id="toggle-password" type="button">Show</button></div></label>
+<div class="login-error" id="login-error" role="alert"></div>
+<button class="auth-primary" type="submit">Sign in to RetailIQ <span>→</span></button>
+</form>
+<div class="demo-credential-note"><strong>Demo access</strong><span>manager@retailiq.local · retailiq2026</span><small>Frontend session gate for the hackathon demo; it is not production authentication.</small></div>
+</div>
+</div>
+</section><div class="app-shell flow-hidden">
+<aside aria-label="Primary navigation" class="sidebar" id="sidebar">
+<div class="brand-row">
+<div aria-hidden="true" class="brand-mark">R</div>
+<div class="brand-copy"><strong>RetailIQ</strong><span>Retail Decision Intelligence</span></div>
+<button aria-label="Close navigation" class="sidebar-close" id="sidebar-close">×</button>
+</div>
+<nav class="nav" id="nav"><button class="nav-item active" data-page="overview"><span class="nav-icon"><svg viewbox="0 0 24 24"><path d="M4 19V5M4 19h16m-13-4 4-5 3 3 5-7"></path></svg></span><span>Decision Overview</span></button><button class="nav-item" data-page="twin"><span class="nav-icon"><svg viewbox="0 0 24 24"><path d="M4 7h10M18 7h2"></path><circle cx="16" cy="7" r="2"></circle><path d="M4 17h2M10 17h10"></path><circle cx="8" cy="17" r="2"></circle><path d="M4 12h5M13 12h7"></path><circle cx="11" cy="12" r="2"></circle></svg></span><span>Decision Twin</span></button><button class="nav-item" data-page="sales"><span class="nav-icon"><svg viewbox="0 0 24 24"><path d="M4 19V5M4 19h16m-13-4 4-5 3 3 5-7"></path></svg></span><span>Sales Signals</span></button><button class="nav-item" data-page="inventory"><span class="nav-icon"><svg viewbox="0 0 24 24"><path d="m4 7 8-4 8 4-8 4-8-4Z"></path><path d="M4 7v10l8 4 8-4V7M12 11v10"></path></svg></span><span>Inventory</span></button><button class="nav-item" data-page="transfers"><span class="nav-icon"><svg viewbox="0 0 24 24"><path d="M7 7h12m-3-3 3 3-3 3M17 17H5m3-3-3 3 3 3"></path></svg></span><span>Smart Transfers</span></button><button class="nav-item" data-page="financial"><span class="nav-icon"><svg viewbox="0 0 24 24"><path d="M7 4h10M7 8h10M9 4c5 0 5 8 0 8H7l9 8"></path></svg></span><span>Financial Impact</span></button><button class="nav-item" data-page="actions"><span class="nav-icon"><svg viewbox="0 0 24 24"><path d="M9 4h6M9 2h6v4H9z"></path><rect height="17" rx="2" width="14" x="5" y="4"></rect><path d="m8.5 12 1.6 1.6 3.2-3.2M8.5 17h7"></path></svg></span><span>Action Center</span></button><button class="nav-item" data-page="data"><span class="nav-icon"><svg viewbox="0 0 24 24"><ellipse cx="12" cy="5" rx="7" ry="3"></ellipse><path d="M5 5v6c0 1.7 3.1 3 7 3s7-1.3 7-3V5M5 11v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"></path></svg></span><span>Data Workspace</span></button></nav>
+<div class="sidebar-foot"><div class="workspace-status"><span class="workspace-dot"></span><div><strong>Active workspace</strong><span id="sidebar-dataset">Waiting for dataset</span></div></div></div>
+</aside>
+<div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+<main class="main">
+<header class="topbar">
+<div class="topbar-left">
+<button aria-label="Open navigation" class="menu-btn" id="menu-btn">
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+</button>
+<div class="page-context">
+<h1 id="page-title">Decision Overview</h1>
+<p id="page-subtitle">Priorities, scenarios and operating signals</p>
+</div>
+</div>
+<form class="global-prompt" id="global-prompt-form" role="search">
+<svg aria-hidden="true" viewbox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+<input aria-label="Ask RetailIQ" autocomplete="off" id="global-prompt" placeholder="Ask about stock, transfers, sales or risk…"/>
+<kbd>Enter</kbd>
+</form>
+<div class="top-actions top-actions-compact">
+<div aria-label="Dashboard context" class="floating-meta">
+<div class="meta-item"><span>Date</span><strong id="analysis-date">—</strong></div>
+<span aria-hidden="true" class="meta-separator"></span>
+<div class="meta-item"><span>Dataset</span><strong id="dataset-name">Demo</strong></div>
+<button aria-label="Refresh data" class="icon-btn" id="refresh-btn" title="Refresh data">
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.34 5.66"></path><path d="M20 4v7h-7"></path></svg>
+</button>
+</div>
+<div class="api-status compact-status" id="api-status"><span class="status-dot"></span><span>Connecting</span></div>
+<div class="user-menu"><div class="user-avatar">RM</div><div class="user-copy"><span>Store Manager</span><strong id="signed-user">manager</strong></div><button aria-label="Sign out" class="logout-icon" id="logout-btn" title="Sign out"><svg viewbox="0 0 24 24"><path d="M10 5H5v14h5M14 8l4 4-4 4M18 12H9"></path></svg></button></div></div>
+</header>
+<div aria-live="polite" class="toast" id="toast" role="status"></div>
+<div class="content">
+<section class="page active" id="page-overview">
+<div class="page-lead">
+<div><p class="section-kicker">DECISION WORKSPACE</p><h2>Decision overview</h2><p>Inventory risk, sales movement, transfer opportunities and financial exposure in one view.</p></div>
+<button class="secondary-btn" data-open-copilot="What needs attention today?">
+              Ask about today's priorities
+            </button>
+</div>
+<div class="metric-grid metric-grid-6" id="overview-metrics">
+<div class="metric-card skeleton-card"></div><div class="metric-card skeleton-card"></div><div class="metric-card skeleton-card"></div><div class="metric-card skeleton-card"></div><div class="metric-card skeleton-card"></div><div class="metric-card skeleton-card"></div>
+</div>
+<div class="overview-workbench">
+<div class="overview-main-stack">
+<article class="panel decision-overview-panel">
+<div class="panel-head">
+<div><p class="section-kicker">DECISION SUPPORT SIMULATION</p><h3>No Action vs Recommended</h3><p class="panel-subcopy">A quick operational comparison using the default Decision Twin scenario.</p></div>
+<button class="text-btn" data-goto="twin">Open Decision Twin</button>
+</div>
+<div class="overview-decision" id="overview-decision"><div class="empty-state">Preparing simulation comparison…</div></div>
+</article>
+<div class="overview-summary-grid">
+<article class="panel summary-widget">
+<div class="panel-head"><div><p class="section-kicker">SALES SIGNALS</p><h3>Recent movement</h3></div><button class="text-btn" data-goto="sales">View all</button></div>
+<div class="mini-signal-list" id="overview-signals"></div>
+</article>
+<article class="panel summary-widget">
+<div class="panel-head"><div><p class="section-kicker">RECOMMENDED TRANSFERS</p><h3>Safe stock movement</h3></div><button class="text-btn" data-goto="transfers">View all</button></div>
+<div class="mini-transfer-list" id="overview-transfers"></div>
+</article>
+</div>
+</div>
+<aside class="panel priority-pane">
+<div class="panel-head priority-pane-head">
+<div><p class="section-kicker">PRIORITIZED ACTIONS</p><h3>Manager task queue</h3><p class="panel-subcopy">Critical items grouped into one focused task pane.</p></div>
+<button class="text-btn" data-goto="actions">View all</button>
+</div>
+<div class="priority-table" id="overview-attention"></div>
+</aside>
+</div>
+<div class="dashboard-grid overview-secondary-grid">
+<article class="panel span-6">
+<div class="panel-head"><div><p class="section-kicker">INVENTORY RISK</p><h3>Risk distribution</h3></div><button class="text-btn" data-goto="inventory">View inventory</button></div>
+<div class="risk-visual" id="risk-visual"></div>
+</article>
+<article class="panel span-6">
+<div class="panel-head"><div><p class="section-kicker">STORE VIEW</p><h3>Attention by store</h3></div></div>
+<div class="bar-chart" id="store-attention-chart"></div>
+</article>
+</div>
+</section>
+<section class="page" id="page-actions">
+<div class="page-lead"><div><p class="section-kicker">MANAGER QUEUE</p><h2>Action Center</h2><p>A ranked operational queue derived from deterministic inventory and sales findings.</p></div></div>
+<article class="panel table-panel">
+<div class="table-toolbar"><div><strong id="action-count">—</strong><span> items in current priority queue</span></div><button class="secondary-btn" data-open-copilot="What should I worry about today?">Discuss priorities</button></div>
+<div class="table-wrap"><table><thead><tr><th>Priority</th><th>Product</th><th>Store</th><th>Issue</th><th>Key metric</th><th>Reason</th></tr></thead><tbody id="action-body"></tbody></table></div>
+</article>
+</section>
+<section class="page" id="page-inventory">
+<div class="page-lead"><div><p class="section-kicker">INVENTORY</p><h2>Inventory risk</h2><p>Days of cover, supplier lead time, overstock and slow-moving positions from committed records.</p></div></div>
+<div class="filter-row">
+<div class="search-box"><svg aria-hidden="true" viewbox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg><input id="inventory-search" placeholder="Search products or stores"/></div>
+<select aria-label="Filter inventory by store" id="inventory-store-filter"><option value="">All stores</option></select>
+<select aria-label="Filter inventory by risk" id="inventory-risk-filter"><option value="">All statuses</option></select>
+</div>
+<div class="tab-row" id="inventory-tabs"><button class="tab active" data-inv="stockout">Stockout Risk</button><button class="tab" data-inv="overstock">Overstock</button><button class="tab" data-inv="slow">Slow Movers</button></div>
+<article class="panel table-panel"><div class="table-wrap"><table><thead id="inventory-head"></thead><tbody id="inventory-body"></tbody></table></div></article>
+</section>
+<section class="page" id="page-sales">
+<div class="page-lead"><div><p class="section-kicker">SALES</p><h2>Sales signals</h2><p>Measured spikes and drops against the preceding baseline window. No causal claim is inferred.</p></div></div>
+<div class="signal-summary" id="signal-summary"></div>
+<article class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>Product</th><th>Store</th><th>Signal</th><th>Recent/day</th><th>Baseline/day</th><th>Change</th><th>Comparison</th></tr></thead><tbody id="sales-body"></tbody></table></div></article>
+</section>
+<section class="page" id="page-transfers">
+<div class="page-lead"><div><p class="section-kicker">REBALANCING</p><h2>Smart transfers</h2><p>Move safe donor surplus before placing an emergency purchase.</p></div><button class="secondary-btn" data-open-copilot="Can Mumbai help Pune?">Ask about transfers</button></div>
+<div class="transfer-list" id="transfer-list"></div>
+</section>
+<section class="page" id="page-twin">
+<div class="page-lead"><div><p class="section-kicker">DECISION SUPPORT</p><h2>Decision Twin</h2><p>Compare no action, supplier reorder and safe inter-store transfer under the same demand assumption.</p></div></div>
+<article class="panel twin-controls">
+<label><span>Store ID</span><input id="twin-store" value="S001"/></label>
+<label><span>Product ID</span><input id="twin-product" value="P001"/></label>
+<label><span>Horizon</span><div class="input-suffix"><input id="twin-horizon" max="60" min="1" type="number" value="14"/><em>days</em></div></label>
+<label><span>Demand multiplier</span><div class="input-suffix"><input id="twin-demand" max="5" min="0.1" step="0.1" type="number" value="1"/><em>×</em></div></label>
+<button class="primary-btn" id="run-twin">Run simulation</button>
+</article>
+<div class="scenario-assumption" id="twin-assumption"></div>
+<div class="current-state" id="twin-current"></div>
+<article class="panel scenario-visual-panel"><div class="panel-head"><div><p class="section-kicker">SCENARIO COMPARISON</p><h3>Service level and operational loss</h3></div></div><div class="scenario-bars" id="scenario-bars"></div></article>
+<div class="scenario-grid" id="scenario-grid"></div>
+<article class="panel recommendation-panel" id="twin-recommendation"></article>
+</section>
+<section class="page" id="page-financial">
+<div class="page-lead"><div><p class="section-kicker">FINANCIAL</p><h2>Financial impact</h2><p>Deterministic scenario estimates from product prices, inventory, demand and configured logistics assumptions.</p></div></div>
+<div class="metric-grid" id="financial-metrics"></div>
+<div class="dashboard-grid">
+<article class="panel span-6"><div class="panel-head"><div><p class="section-kicker">BLOCKED CAPITAL</p><h3>Largest excess-inventory contributors</h3></div></div><div class="bar-chart money-bars" id="blocked-capital-chart"></div></article>
+<article class="panel span-6"><div class="panel-head"><div><p class="section-kicker">REVENUE RISK</p><h3>Largest stockout exposures</h3></div></div><div class="bar-chart money-bars" id="revenue-risk-chart"></div></article>
+<article class="panel span-6"><div class="panel-head"><div><p class="section-kicker">STOCKOUT EXPOSURE</p><h3>Revenue &amp; margin</h3></div></div><div class="money-breakdown" id="stockout-money"></div></article>
+<article class="panel span-6"><div class="panel-head"><div><p class="section-kicker">TRANSFER VALUE</p><h3>Potential benefit</h3></div></div><div class="money-breakdown" id="transfer-money"></div></article>
+</div>
+<p class="disclaimer" id="financial-disclaimer"></p>
+</section>
+<section class="page" id="page-data">
+<div class="page-lead"><div><p class="section-kicker">DATA FOUNDATION</p><h2>Data Workspace</h2><p>Review the active dataset or reopen the guided data connection flow.</p></div><button class="primary-btn" id="change-dataset">Connect another dataset</button></div>
+<div class="metric-grid metric-grid-4" id="data-summary-cards"></div>
+<div class="dashboard-grid">
+<article class="panel span-7 dataset-management-card"><div class="panel-head"><div><p class="section-kicker">ACTIVE DATASET</p><h3 id="active-dataset-title">Retail dataset</h3></div><span class="status-inline low"><span class="status-inline-dot"></span><span>Active</span></span></div><p>Every inventory metric, sales signal, transfer recommendation, financial estimate, Decision Twin scenario and Copilot answer uses this active dataset.</p><div class="dataset-rules"><div><strong>Validated before activation</strong><span>Schema, IDs, dates and relationships are checked first.</span></div><div><strong>One source of truth</strong><span>All downstream services resolve the same active dataset.</span></div><div><strong>Safe fallback</strong><span>The committed demo dataset remains available for demonstrations.</span></div></div></article>
+<article class="panel span-5 dataset-actions-card"><p class="section-kicker">DATASET ACTIONS</p><h3>Switch analysis source</h3><p>Open the guided connector to validate a new dataset, or return to the committed demo data.</p><button class="secondary-btn full" id="change-dataset-secondary">Open data connector</button><button class="danger-ghost-btn full" id="workspace-reset-demo">Use demo dataset</button></article>
+</div>
+</section>
+</div>
+</main>
+</div>
+<button aria-expanded="false" aria-label="Open RetailIQ Copilot" class="copilot-fab" id="copilot-fab">
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M7 18.5 3.5 21v-5.2A8 8 0 1 1 7 18.5Z"></path><path d="M8 10h8M8 14h5"></path></svg>
+<span class="fab-label">Ask RetailIQ</span>
+</button>
+<div class="copilot-backdrop" id="copilot-backdrop"></div>
+<aside aria-hidden="true" aria-label="RetailIQ Copilot" class="copilot-drawer copilot-v4" id="copilot-drawer">
+<header class="copilot-header">
+<div class="copilot-brand-lockup">
+<div aria-hidden="true" class="copilot-mark">
+<svg viewbox="0 0 24 24"><path d="M7 18.5 3.5 21v-5.2A8 8 0 1 1 7 18.5Z"></path><path d="M8 10h8M8 14h5"></path></svg>
+</div>
+<div>
+<strong>RetailIQ Copilot</strong>
+<span>Grounded retail decision support</span>
+</div>
+</div>
+<button aria-label="Close Copilot" class="drawer-close" id="copilot-close">×</button>
+</header>
+<div class="copilot-toolbar">
+<div class="copilot-grounding" id="model-status" title="Copilot status">
+<span aria-hidden="true" class="grounding-dot"></span>
+<span>Checking decision support…</span>
+</div>
+<label class="language-control">
+<span class="sr-only">Response language</span>
+<select aria-label="Response language" id="copilot-language">
+<option value="">Auto language</option>
+<option value="en">English</option>
+<option value="hi">हिन्दी</option>
+<option value="mr">मराठी</option>
+</select>
+</label>
+</div>
+<div aria-live="polite" class="chat" id="chat">
+<section class="copilot-welcome" id="copilot-welcome">
+<div aria-hidden="true" class="welcome-icon">
+<svg viewbox="0 0 24 24"><path d="M4 19V5M4 19h16m-13-4 4-5 3 3 5-7"></path></svg>
+</div>
+<h3>What do you need to decide?</h3>
+<p>Ask about inventory risk, transfers, unusual sales, financial exposure, or compare what happens before you act.</p>
+<div class="quick-prompts" id="quick-prompts">
+<button type="button"><span class="prompt-title">Today's priorities</span><span class="prompt-copy">What needs attention today?</span></button>
+<button type="button"><span class="prompt-title">Stockout risk</span><span class="prompt-copy">Which products may run out in Pune?</span></button>
+<button type="button"><span class="prompt-title">Store transfer</span><span class="prompt-copy">Can Mumbai help Pune?</span></button>
+<button type="button"><span class="prompt-title">Financial exposure</span><span class="prompt-copy">Where is money blocked in inventory?</span></button>
+</div>
+<div class="copilot-safety-note">
+<span aria-hidden="true" class="safety-line"></span>
+<span>Facts and calculations come from the active retail dataset. Business actions still require manager review.</span>
+</div>
+</section>
+</div>
+<div aria-live="polite" class="copilot-details" id="copilot-details"></div>
+<form class="composer" id="copilot-form">
+<div class="composer-shell">
+<textarea aria-label="Ask a retail question" id="copilot-input" maxlength="1000" placeholder="Ask a retail question…" rows="1"></textarea>
+<button aria-label="Send message" class="send-btn" type="submit">
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="m5 12 14-7-5 14-2.3-4.7L5 12Z"></path><path d="m11.7 14.3 2.8-2.8"></path></svg>
+</button>
+</div>
+<div class="composer-foot"><span>Verified retail data</span><span>•</span><span>Human approval for actions</span></div>
+</form>
+</aside>
+<script defer="" src="/assets/app.js"></script>
 </body>
 </html>
