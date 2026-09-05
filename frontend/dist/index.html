@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0d1728" />
+  <meta name="description" content="RetailIQ — grounded multilingual sales and inventory copilot" />
+  <title>RetailIQ — Sales & Inventory Copilot</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Primary navigation">
+      <div class="brand">
+        <div class="brand-mark">R</div>
+        <div><strong>RetailIQ</strong><span>Decision Intelligence</span></div>
+      </div>
+      <nav class="nav" id="nav">
+        <button class="nav-item active" data-page="overview"><span>◫</span> Overview</button>
+        <button class="nav-item" data-page="inventory"><span>▦</span> Inventory</button>
+        <button class="nav-item" data-page="sales"><span>↗</span> Sales Signals</button>
+        <button class="nav-item" data-page="transfers"><span>⇄</span> Smart Transfers</button>
+        <button class="nav-item" data-page="twin"><span>◇</span> Decision Twin</button>
+        <button class="nav-item" data-page="financial"><span>₹</span> Financial Impact</button>
+        <button class="nav-item" data-page="copilot"><span>✦</span> AI Copilot</button>
+      </nav>
+      <div class="sidebar-foot">
+        <div class="trust-mini"><span class="pulse"></span><span>Grounded mode</span></div>
+        <small>Python owns facts & decisions</small>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">RETAIL OPERATIONS COPILOT</p>
+          <h1 id="page-title">Overview</h1>
+        </div>
+        <div class="top-actions">
+          <div class="date-chip"><span>Analysis date</span><strong id="analysis-date">—</strong></div>
+          <button class="icon-btn" id="refresh-btn" title="Refresh data">↻</button>
+          <div class="status-chip" id="api-status"><span class="status-dot"></span>Connecting</div>
+        </div>
+      </header>
+
+      <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+      <section class="page active" id="page-overview">
+        <div class="hero-strip">
+          <div>
+            <span class="pill">PS03 · Sales & Inventory Copilot</span>
+            <h2>Know what needs attention <em>before</em> it becomes a problem.</h2>
+            <p>Grounded retail intelligence across stock risk, demand signals, transfers, financial impact and what-if decisions.</p>
+          </div>
+          <button class="primary-btn" data-goto="copilot">Ask RetailIQ <span>→</span></button>
+        </div>
+
+        <div class="metric-grid" id="overview-metrics">
+          <div class="metric-card skeleton-card"></div><div class="metric-card skeleton-card"></div><div class="metric-card skeleton-card"></div><div class="metric-card skeleton-card"></div>
+        </div>
+
+        <div class="grid-2 overview-grid">
+          <article class="panel">
+            <div class="panel-head"><div><p class="eyebrow">RISK DISTRIBUTION</p><h3>Inventory attention</h3></div><button class="text-btn" data-goto="inventory">View inventory →</button></div>
+            <div id="risk-bars" class="risk-bars"></div>
+          </article>
+          <article class="panel trust-panel">
+            <div class="panel-head"><div><p class="eyebrow">TRUST LAYER</p><h3>Why this answer can be trusted</h3></div><span class="shield">✓</span></div>
+            <div class="trust-list">
+              <div><strong>Deterministic metrics</strong><span>Stock, revenue, reorder quantity and simulations are calculated in Python.</span></div>
+              <div><strong>Evidence attached</strong><span>Recommendations carry source record IDs and calculation assumptions.</span></div>
+              <div><strong>No silent guessing</strong><span>Missing or ambiguous data becomes an explicit unknown or clarification.</span></div>
+            </div>
+          </article>
+        </div>
+
+        <article class="panel">
+          <div class="panel-head"><div><p class="eyebrow">PRIORITY QUEUE</p><h3>What needs attention now</h3></div><span class="muted" id="attention-count">—</span></div>
+          <div class="attention-list" id="attention-list"></div>
+        </article>
+      </section>
+
+      <section class="page" id="page-inventory">
+        <div class="section-intro"><div><p class="eyebrow">DETERMINISTIC INVENTORY ANALYTICS</p><h2>Inventory risk cockpit</h2><p>Days of cover, lead time, reorder logic and data-quality uncertainty are computed from committed records.</p></div></div>
+        <div class="tab-row" id="inventory-tabs"><button class="tab active" data-inv="stockout">Stockout risk</button><button class="tab" data-inv="overstock">Overstock</button><button class="tab" data-inv="slow">Slow movers</button></div>
+        <article class="panel table-panel"><div class="table-wrap"><table><thead id="inventory-head"></thead><tbody id="inventory-body"></tbody></table></div></article>
+      </section>
+
+      <section class="page" id="page-sales">
+        <div class="section-intro"><div><p class="eyebrow">SIGNAL DETECTION</p><h2>Sales spikes & drops</h2><p>Recent demand is compared against a preceding baseline window. RetailIQ reports the change without inventing causes.</p></div></div>
+        <div class="signal-summary" id="signal-summary"></div>
+        <article class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>Product</th><th>Store</th><th>Signal</th><th>Recent/day</th><th>Baseline/day</th><th>Change</th><th>Explanation</th></tr></thead><tbody id="sales-body"></tbody></table></div></article>
+      </section>
+
+      <section class="page" id="page-transfers">
+        <div class="section-intro"><div><p class="eyebrow">CROSS-STORE OPTIMISATION</p><h2>Smart stock transfers</h2><p>Move surplus inventory before placing an emergency purchase, while preserving donor-store safety reserve.</p></div></div>
+        <div class="transfer-list" id="transfer-list"></div>
+      </section>
+
+      <section class="page" id="page-twin">
+        <div class="section-intro"><div><p class="eyebrow">RETAIL DECISION TWIN</p><h2>Compare actions before acting</h2><p>Simulate no action, supplier reorder and safe inter-store transfer under the same demand assumption.</p></div></div>
+        <article class="panel twin-controls">
+          <label>Store ID<input id="twin-store" value="S001" /></label>
+          <label>Product ID<input id="twin-product" value="P001" /></label>
+          <label>Horizon<input id="twin-horizon" type="number" min="1" max="60" value="14" /><span>days</span></label>
+          <label>Demand<input id="twin-demand" type="number" min="0.1" max="5" step="0.1" value="1" /><span>×</span></label>
+          <button class="primary-btn" id="run-twin">Run simulation</button>
+        </article>
+        <div id="twin-current" class="current-state"></div>
+        <div class="scenario-grid" id="scenario-grid"></div>
+        <article class="panel recommendation-panel" id="twin-recommendation"></article>
+      </section>
+
+      <section class="page" id="page-financial">
+        <div class="section-intro"><div><p class="eyebrow">₹ IMPACT INTELLIGENCE</p><h2>Translate operations into financial impact</h2><p>Scenario estimates are grounded in committed prices, inventory, demand and configured logistics assumptions.</p></div></div>
+        <div class="metric-grid" id="financial-metrics"></div>
+        <div class="grid-2">
+          <article class="panel"><div class="panel-head"><div><p class="eyebrow">STOCKOUT EXPOSURE</p><h3>Revenue & margin at risk</h3></div></div><div id="stockout-money" class="money-breakdown"></div></article>
+          <article class="panel"><div class="panel-head"><div><p class="eyebrow">TRANSFER VALUE</p><h3>Potential benefit</h3></div></div><div id="transfer-money" class="money-breakdown"></div></article>
+        </div>
+        <p class="disclaimer" id="financial-disclaimer"></p>
+      </section>
+
+      <section class="page" id="page-copilot">
+        <div class="copilot-layout">
+          <article class="copilot-main panel">
+            <div class="copilot-head">
+              <div><span class="ai-orb">✦</span><div><p class="eyebrow">GROUNDED MULTILINGUAL AI</p><h2>Ask RetailIQ</h2></div></div>
+              <div class="model-status" id="model-status">Checking Gemini…</div>
+            </div>
+            <div class="quick-prompts" id="quick-prompts">
+              <button>Which products may run out in Pune?</button>
+              <button>What should I do about Amul Milk in Pune?</button>
+              <button>Why did Brown Bread sales fall in Pune?</button>
+              <button>पुणे स्टोअरमध्ये कोणते प्रॉडक्ट लवकर संपणार आहेत?</button>
+            </div>
+            <div class="chat" id="chat">
+              <div class="message assistant"><div class="avatar">R</div><div class="bubble"><strong>RetailIQ Copilot</strong><p>Ask about stock risk, sales signals, transfers, financial impact or a what-if decision. Every answer is grounded in deterministic retail data.</p></div></div>
+            </div>
+            <form class="composer" id="copilot-form">
+              <select id="copilot-language" aria-label="Response language"><option value="">Auto</option><option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option></select>
+              <textarea id="copilot-input" rows="1" maxlength="1000" placeholder="Ask a retail question…"></textarea>
+              <button class="send-btn" type="submit" aria-label="Send">↑</button>
+            </form>
+          </article>
+          <aside class="panel evidence-panel">
+            <div class="panel-head"><div><p class="eyebrow">TRACEABILITY</p><h3>Evidence & safeguards</h3></div></div>
+            <div id="evidence-content" class="evidence-empty">Ask a question to inspect the tool used, source records, assumptions and uncertainty.</div>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="/assets/app.js" defer></script>
+</body>
+</html>

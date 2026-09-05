@@ -31,9 +31,9 @@ Optional model override:
 GEMINI_MODEL
 ```
 
-## Current functionality — Phase 5
+## Current functionality — Phase 6
 
-Phase 5 adds the **grounded multilingual Gemini copilot** and the explainability/uncertainty layer while preserving all previous deterministic analytics and Decision Twin features.
+Phase 6 delivers the complete single-process RetailIQ experience: deterministic analytics, Decision Twin, financial intelligence, grounded multilingual Gemini copilot, explainability, and the committed production dashboard served by FastAPI.
 
 Supported languages:
 
@@ -167,3 +167,33 @@ RetailIQ never asks an LLM to invent stock, revenue, demand velocity, days of co
 ## Demo video
 
 Add final Devfolio demo video link here before submission.
+
+## Phase 6 — committed frontend dashboard
+
+RetailIQ now includes a self-contained production dashboard in `frontend/dist/`. No Node.js, npm install, CDN, frontend dev server, or second terminal is required by judges. FastAPI serves the committed frontend build and the API from the same process.
+
+Dashboard sections:
+
+- Overview with live revenue, inventory health, stockout attention and transfer opportunity metrics.
+- Inventory cockpit for stockout risk, overstock and slow movers.
+- Sales Signals for deterministic spike/drop detection.
+- Smart Transfers showing donor safety, transfer quantity, logistics estimate and purchase cash deferred.
+- Decision Twin for no-action vs supplier-reorder vs smart-transfer what-if simulation.
+- Financial Impact translating operational findings into revenue risk, blocked capital and transfer benefit.
+- Grounded multilingual AI Copilot with English/Hindi/Marathi, evidence, unknowns and safeguard visibility.
+
+Judge run path remains exactly:
+
+```bash
+pip install -r requirements.txt
+python app.py
+```
+
+Then open `http://localhost:8000`.
+
+### Gemini model
+
+RetailIQ is designed to use:
+
+```text
+gemini-2.5-flash-lite
