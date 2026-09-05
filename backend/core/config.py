@@ -4,7 +4,7 @@ import yaml
 from dotenv import load_dotenv
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
-load_dotenv(ROOT_DIR / ".env")
+load_dotenv(ROOT_DIR / ".env", encoding="utf-8-sig")
 
 
 def _load_yaml(name: str) -> dict:

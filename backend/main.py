@@ -5,6 +5,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 
+from backend.api.copilot import router as copilot_router
 from backend.api.dashboard import router as dashboard_router
 from backend.api.inventory import router as inventory_router
 from backend.api.financial import router as financial_router
@@ -42,6 +43,7 @@ def data_summary():
 # API routers are registered before the SPA catch-all so API paths can never be
 # swallowed by frontend routing.
 app.include_router(dashboard_router)
+app.include_router(copilot_router)
 app.include_router(inventory_router)
 app.include_router(sales_router)
 app.include_router(products_router)
