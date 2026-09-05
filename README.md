@@ -1860,10 +1860,10 @@ Focus    = Sales & Inventory Decision Copilot
 Add the final Devfolio/demo video link before submission:
 
 ```text
-DEMO_VIDEO_URL=ADD_FINAL_VIDEO_LINK_HERE
+DEMO_VIDEO_URL=(https://youtu.be/seWrYUhvjJ0)
 ```
 
-Do not leave a fake video URL in the final submission.
+
 
 ---
 
